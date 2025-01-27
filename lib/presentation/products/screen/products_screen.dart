@@ -5,7 +5,6 @@ import 'package:flutter_bootcamp_task/di.dart';
 import 'package:flutter_bootcamp_task/presentation/core/widgets/custom_pull_down_refresh_indicator.dart';
 import 'package:flutter_bootcamp_task/presentation/core/widgets/error_state_widget.dart';
 import 'package:flutter_bootcamp_task/presentation/core/widgets/loading_state_widget.dart';
-import 'package:flutter_bootcamp_task/presentation/products/manager/connector/products_connector.dart';
 import 'package:flutter_bootcamp_task/presentation/products/manager/cubit_view_model/products_state.dart';
 import 'package:flutter_bootcamp_task/presentation/products/manager/cubit_view_model/products_screen_view_model.dart';
 import 'package:flutter_bootcamp_task/presentation/products/widgets/product_card.dart';
@@ -19,7 +18,7 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class ProductsScreenState extends State<ProductsScreen>
-    implements ProductsConnector {
+{
   late ProductsScreenViewModel productsViewModel;
   DateTime? lastPressed;
 
@@ -27,7 +26,6 @@ class ProductsScreenState extends State<ProductsScreen>
   void initState() {
     super.initState();
     productsViewModel = getIt.get<ProductsScreenViewModel>();
-    productsViewModel.productsConnector = this;
     productsViewModel.loadProducts();
   }
 
@@ -36,7 +34,7 @@ class ProductsScreenState extends State<ProductsScreen>
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        productsViewModel.whenPopInvoked(didPop, result);
+        onPopInvoked(didPop, result);
       },
       child: BlocProvider(
         create: (context) => productsViewModel,
@@ -91,7 +89,6 @@ class ProductsScreenState extends State<ProductsScreen>
     );
   }
 
-  @override
   void onPopInvoked(bool didPop, Object? result) {
     DateTime now = DateTime.now();
     bool isWarning = (lastPressed == null) ||
