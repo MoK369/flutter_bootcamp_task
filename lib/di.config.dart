@@ -19,7 +19,8 @@ import 'data/repository_imp/products/products_repository_imp.dart' as _i760;
 import 'data/services/apis/api_manager.dart' as _i265;
 import 'domain/respositories/products/products_repository.dart' as _i206;
 import 'domain/use_cases/products/get_products_use_case.dart' as _i114;
-import 'presentation/products/manager/products_view_model.dart' as _i499;
+import 'presentation/products/manager/cubit_view_model/products_screen_view_model.dart'
+    as _i267;
 
 extension GetItInjectableX on _i174.GetIt {
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -39,8 +40,9 @@ extension GetItInjectableX on _i174.GetIt {
         productsRemoteDataSource: gh<_i275.ProductsRemoteDataSource>()));
     gh.factory<_i114.GetProductsUseCase>(() => _i114.GetProductsUseCase(
         productsRepository: gh<_i206.ProductsRepository>()));
-    gh.factory<_i499.ProductsViewModel>(() => _i499.ProductsViewModel(
-        getProductsUseCase: gh<_i114.GetProductsUseCase>()));
+    gh.factory<_i267.ProductsScreenViewModel>(() =>
+        _i267.ProductsScreenViewModel(
+            getProductsUseCase: gh<_i114.GetProductsUseCase>()));
     return this;
   }
 }

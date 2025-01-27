@@ -5,8 +5,9 @@ import 'package:flutter_bootcamp_task/di.dart';
 import 'package:flutter_bootcamp_task/presentation/core/widgets/custom_pull_down_refresh_indicator.dart';
 import 'package:flutter_bootcamp_task/presentation/core/widgets/error_state_widget.dart';
 import 'package:flutter_bootcamp_task/presentation/core/widgets/loading_state_widget.dart';
-import 'package:flutter_bootcamp_task/presentation/products/manager/products_state.dart';
-import 'package:flutter_bootcamp_task/presentation/products/manager/products_view_model.dart';
+import 'package:flutter_bootcamp_task/presentation/products/manager/connector/products_connector.dart';
+import 'package:flutter_bootcamp_task/presentation/products/manager/cubit_view_model/products_state.dart';
+import 'package:flutter_bootcamp_task/presentation/products/manager/cubit_view_model/products_screen_view_model.dart';
 import 'package:flutter_bootcamp_task/presentation/products/widgets/product_card.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -14,15 +15,19 @@ class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
 
   @override
-  State<ProductsScreen> createState() => _ProductsScreenState();
+  State<ProductsScreen> createState() => ProductsScreenState();
 }
 
-class _ProductsScreenState extends State<ProductsScreen> {
-  ProductsViewModel productsViewModel = getIt.get<ProductsViewModel>();
+class ProductsScreenState extends State<ProductsScreen>
+    implements ProductsConnector {
+  late ProductsScreenViewModel productsViewModel;
   DateTime? lastPressed;
+
   @override
   void initState() {
     super.initState();
+    productsViewModel = getIt.get<ProductsScreenViewModel>();
+    productsViewModel.productsConnector = this;
     productsViewModel.loadProducts();
   }
 
@@ -31,20 +36,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        DateTime now = DateTime.now();
-        bool isWarning = (lastPressed == null) ||
-            (now.difference(lastPressed!) > const Duration(seconds: 2));
-        if (isWarning) {
-          lastPressed = DateTime.now();
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Press back again to exit"),
-            margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-            duration: Duration(seconds: 2),
-          ));
-          return;
-        }
-        SystemNavigator.pop();
-        lastPressed = null;
+        productsViewModel.whenPopInvoked(didPop, result);
       },
       child: BlocProvider(
         create: (context) => productsViewModel,
@@ -64,7 +56,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             },
             child: RPadding(
               padding: const EdgeInsets.all(8),
-              child: BlocBuilder<ProductsViewModel, ProductsState>(
+              child: BlocBuilder<ProductsScreenViewModel, ProductsState>(
                 builder: (context, state) {
                   switch (state) {
                     case ProductsLoadingState():
@@ -97,5 +89,23 @@ class _ProductsScreenState extends State<ProductsScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void onPopInvoked(bool didPop, Object? result) {
+    DateTime now = DateTime.now();
+    bool isWarning = (lastPressed == null) ||
+        (now.difference(lastPressed!) > const Duration(seconds: 2));
+    if (isWarning) {
+      lastPressed = DateTime.now();
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Press back again to exit"),
+        margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        duration: Duration(seconds: 2),
+      ));
+      return;
+    }
+    SystemNavigator.pop();
+    lastPressed = null;
   }
 }

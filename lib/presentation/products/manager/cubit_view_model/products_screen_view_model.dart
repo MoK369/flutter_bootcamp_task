@@ -1,14 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bootcamp_task/domain/api_result/api_result.dart';
 import 'package:flutter_bootcamp_task/domain/models/products/product_data_model.dart';
 import 'package:flutter_bootcamp_task/domain/use_cases/products/get_products_use_case.dart';
-import 'package:flutter_bootcamp_task/presentation/products/manager/products_state.dart';
+import 'package:flutter_bootcamp_task/presentation/products/manager/connector/products_connector.dart';
+import 'package:flutter_bootcamp_task/presentation/products/manager/cubit_view_model/products_state.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
-class ProductsViewModel extends Cubit<ProductsState> {
+class ProductsScreenViewModel extends Cubit<ProductsState> {
   GetProductsUseCase getProductsUseCase;
-  ProductsViewModel({required this.getProductsUseCase})
+  late ProductsConnector productsConnector;
+  ProductsScreenViewModel(
+      {required this.getProductsUseCase})
       : super(ProductsLoadingState());
 
   void loadProducts() async {
@@ -22,5 +26,9 @@ class ProductsViewModel extends Cubit<ProductsState> {
       case CodeError<List<ProductDataModel>>():
         emit(ProductsErrorState(exception: useCaseResult.exception));
     }
+  }
+
+  void whenPopInvoked(bool didPop, Object? result) {
+    productsConnector.onPopInvoked(didPop, result);
   }
 }
