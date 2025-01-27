@@ -1,30 +1,31 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_bootcamp_task/presentation/core/bases/base_stateful_widget_state.dart';
+import 'package:flutter_bootcamp_task/domain/models/products/product_data_model.dart';
+import 'package:flutter_bootcamp_task/presentation/core/bases/base_view_stateful_widget_state.dart';
 import 'package:flutter_bootcamp_task/presentation/core/themes/app_themes.dart';
 import 'package:flutter_bootcamp_task/presentation/core/widgets/custom_cached_network_image_widget.dart';
 import 'package:flutter_bootcamp_task/presentation/products/widgets/heart_button.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductCard extends StatefulWidget {
-  final product;
+  final ProductDataModel product;
   const ProductCard({super.key, required this.product});
 
   @override
   State<ProductCard> createState() => _ProductCardState();
 }
 
-class _ProductCardState extends BaseStatefulWidgetState<ProductCard> {
-  bool isThereDiscount = true;
+class _ProductCardState extends BaseViewStatefulWidgetState<ProductCard> {
+  bool isThereDiscount = false;
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.product.priceAfterDiscount == 0 ||
-        widget.product.priceAfterDiscount == null) {
-      isThereDiscount = false;
-    }
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   if (widget.product.priceAfterDiscount == 0 ||
+  //       widget.product.priceAfterDiscount == null) {
+  //     isThereDiscount = false;
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,7 @@ class _ProductCardState extends BaseStatefulWidgetState<ProductCard> {
                             topLeft: Radius.circular(14),
                             topRight: Radius.circular(14)),
                         child: CustomCachedNetworkImageWidget(
-                            imageUrl: widget.product.imageCover ?? "",
+                            imageUrl: widget.product.image ?? "",
                             boxFit: BoxFit.cover,
                             shimmerWidth: 1,
                             shimmerHeight: 1),
@@ -100,9 +101,7 @@ class _ProductCardState extends BaseStatefulWidgetState<ProductCard> {
                         Row(
                           children: [
                             Text(
-                              isThereDiscount
-                                  ? "EGP ${widget.product.priceAfterDiscount ?? ""}"
-                                  : "EGP ${widget.product.price ?? ""}",
+                              "EGP ${widget.product.price??""}",
                               style: theme.textTheme.labelMedium!.copyWith(
                                   color: const Color(0xFF06004F),
                                   fontSize: 14 * sp),
@@ -135,7 +134,7 @@ class _ProductCardState extends BaseStatefulWidgetState<ProductCard> {
                                 text: TextSpan(children: [
                               TextSpan(
                                 text:
-                                    "Review (${widget.product.ratingsAverage})",
+                                    "Review (${widget.product.rating?.rate??""})",
                                 style: theme.textTheme.labelMedium!.copyWith(
                                     color: const Color(0xFF06004F),
                                     fontSize: 12 * sp),
@@ -151,6 +150,8 @@ class _ProductCardState extends BaseStatefulWidgetState<ProductCard> {
                             ])),
                             const Spacer(),
                             InkWell(
+                              hoverColor: Colors.transparent,
+                              splashColor: Colors.transparent,
                               borderRadius: BorderRadius.circular(360),
                               onTap: () {},
                               child: Container(

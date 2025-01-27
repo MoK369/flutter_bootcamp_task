@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-abstract class BaseStatefulWidgetState<W extends StatefulWidget>
+abstract class BaseViewStatefulWidgetState<W extends StatefulWidget>
     extends State<W> {
   late ThemeData theme;
   @override

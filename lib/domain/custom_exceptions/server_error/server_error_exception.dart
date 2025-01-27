@@ -1,5 +1,5 @@
 class ServerErrorException implements Exception{
+  String statusCode;
   String statusMessage;
-  String errorMessage;
-  ServerErrorException({required this.statusMessage,required this.errorMessage});
+  ServerErrorException({required this.statusCode,required this.statusMessage});
 }
